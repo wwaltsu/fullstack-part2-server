@@ -1,10 +1,10 @@
 const Course = ({ course }) => {
   const Header = ({ course }) => <h1>{course.name}</h1>
 
-  const Part = ({ course }) => {
+  const Part = ({ name, exercises }) => {
     return (
       <p>
-        {course.name} {course.exercises}
+        {name} {exercises}
       </p>
     )
   }
@@ -13,30 +13,26 @@ const Course = ({ course }) => {
     return (
       <div>
         {course.parts.map((c) => (
-          <p key={c.id}>
-            {c.name} {c.exercises}
-          </p>
+          <Part key={c.id} name={c.name} exercises={c.exercises} />
         ))}
       </div>
     )
   }
 
-  const Total = (course) => {
-    console.log('TOTAL', course)
-
-    return (
-      <p>
-        Number of exercises{' '}
-        {course.course.parts[0].exercises +
-          course.course.parts[1].exercises +
-          course.course.parts[2].exercises}
-      </p>
+  const Total = ({ course }) => {
+    const initialValue = 0
+    const exercisesTotal = course.parts.reduce(
+      (sum, part) => sum + part.exercises,
+      initialValue,
     )
+    return <p>total of exercises {exercisesTotal}</p>
   }
 
   return (
     <div>
+      <Header course={course} />
       <Content course={course} />
+      <Total course={course} />
     </div>
   )
 }
