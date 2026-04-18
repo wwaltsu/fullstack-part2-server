@@ -1,5 +1,5 @@
 const Course = ({ course }) => {
-  const Header = ({ course }) => <h1>{course.name}</h1>
+  const Header = ({ parts }) => <h1>{parts.name}</h1>
 
   const Part = ({ name, exercises }) => {
     return (
@@ -9,30 +9,28 @@ const Course = ({ course }) => {
     )
   }
 
-  const Content = ({ course }) => {
-    return (
-      <div>
-        {course.parts.map((c) => (
-          <Part key={c.id} name={c.name} exercises={c.exercises} />
-        ))}
-      </div>
-    )
+  const Content = ({ parts }) => {
+    const courseList = parts.map((part) => {
+      return <Part key={part.id} name={part.name} exercises={part.exercises} />
+    })
+
+    return <div>{courseList}</div>
   }
 
-  const Total = ({ course }) => {
+  const Total = ({ parts }) => {
     const initialValue = 0
-    const exercisesTotal = course.parts.reduce(
+    const exercisesTotal = parts.reduce(
       (sum, part) => sum + part.exercises,
-      initialValue,
+      initialValue
     )
-    return <p>total of exercises {exercisesTotal}</p>
+    return <b>total of exercises {exercisesTotal}</b>
   }
 
   return (
     <div>
-      <Header course={course} />
-      <Content course={course} />
-      <Total course={course} />
+      <Header parts={course} />
+      <Content parts={course.parts} />
+      <Total parts={course.parts} />
     </div>
   )
 }
