@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
-import axios from 'axios'
+import phonebookService from './services/phonebookService'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -11,10 +11,11 @@ const App = () => {
   const [personFilter, setPersonFilter] = useState('')
 
   useEffect(() => {
-    console.log('effect')
-    axios.get('http://localhost:3001/persons').then((response) => {
-      setPersons(response.data)
-    })
+    phonebookService
+      .getAll('http://localhost:3001/persons')
+      .then((response) => {
+        setPersons(response.data)
+      })
   }, [])
   console.log('render', persons.length, 'persons')
 
@@ -34,6 +35,14 @@ const App = () => {
     person.name.toLowerCase().includes(personFilter.toLowerCase())
   )
 
+  const removePerson = (id, name) => {
+    window.confirm(`Delete ${name}?`)
+      ? phonebookService.remove(id).then(() => {
+          setPersons((prev) => prev.filter((person) => person.id !== id))
+        })
+      : false
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
     const personObject = {
@@ -42,18 +51,37 @@ const App = () => {
     }
 
     event.preventDefault()
-    persons.find(
+
+    const existingPerson = persons.find(
       (person) =>
         person.name.toLowerCase().trim() === newName.toLowerCase().trim()
     )
-      ? alert(`${newName} is already added to phonebook`)
-      : axios
-          .post('http://localhost:3001/persons', personObject)
-          .then((response) => {
-            setPersons(persons.concat(response.data))
-            setNewName('')
-            setNewNumber('')
+    if (existingPerson) {
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        phonebookService
+          .update(existingPerson.id, personObject)
+          .then((updatedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== existingPerson.id ? person : updatedPerson
+              )
+            )
           })
+      }
+      return
+    }
+
+    phonebookService
+      .create('http://localhost:3001/persons', personObject)
+      .then((response) => {
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   return (
@@ -69,7 +97,7 @@ const App = () => {
         newNumber={newNumber}
       />
       <h2>Numbers</h2>
-      <Persons personsToFilter={personsToFilter} />
+      <Persons personsToFilter={personsToFilter} removePerson={removePerson} />
     </div>
   )
 }
