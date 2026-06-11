@@ -3,12 +3,16 @@ import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import phonebookService from './services/phonebookService'
+import Notification from './components/Notification'
+import './index.css'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [personFilter, setPersonFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
   useEffect(() => {
     phonebookService
@@ -50,43 +54,58 @@ const App = () => {
       number: newNumber
     }
 
-    event.preventDefault()
-
-    const existingPerson = persons.find(
+    const alreadyAddedPerson = persons.find(
       (person) =>
         person.name.toLowerCase().trim() === newName.toLowerCase().trim()
     )
-    if (existingPerson) {
+    if (alreadyAddedPerson) {
       if (
         window.confirm(
           `${newName} is already added to phonebook, replace the old number with a new one?`
         )
       ) {
         phonebookService
-          .update(existingPerson.id, personObject)
+          .update(alreadyAddedPerson.id, personObject)
           .then((updatedPerson) => {
             setPersons(
               persons.map((person) =>
-                person.id !== existingPerson.id ? person : updatedPerson
+                person.id !== alreadyAddedPerson.id ? person : updatedPerson
               )
+            )
+            setNewName('')
+            setNewNumber('')
+          })
+          .catch(() => {
+            setErrorMessage(
+              `Person '${alreadyAddedPerson.name}' was already removed from server`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
+            setPersons((prev) =>
+              prev.filter((n) => n.id !== alreadyAddedPerson.id)
             )
           })
       }
       return
     }
 
-    phonebookService
-      .create('http://localhost:3001/persons', personObject)
-      .then((response) => {
-        setPersons(persons.concat(response.data))
-        setNewName('')
-        setNewNumber('')
-      })
+    phonebookService.create(personObject).then((response) => {
+      setPersons(persons.concat(response.data))
+      setSuccessMessage(`Added ${personObject.name}`)
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
+      setNewName('')
+      setNewNumber('')
+    })
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} style={'error'} />
+      <Notification message={successMessage} style={'success'} />
       <Filter handleFilterPersonChange={handleFilterPersonChange} />
       <h2>add a new</h2>
       <PersonForm

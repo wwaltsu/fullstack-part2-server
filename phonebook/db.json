@@ -1,9 +1,25 @@
 {
   "persons": [
     {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
-      "id": "3"
+      "name": "feesf ewgr",
+      "number": "324234",
+      "id": "VYSkhSboBQA"
+    },
+    {
+      "name": "fff",
+      "number": "",
+      "id": "q2d2vU7Q614"
+    },
+    {
+      "name": "efsfesfes",
+      "number": "55465654",
+      "id": "juQ3i0Bgnno"
+    },
+    {
+      "name": "sfeef",
+      "number": "4454",
+      "id": "eYlyZS2JgbQ"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
