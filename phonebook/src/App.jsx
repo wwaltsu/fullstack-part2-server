@@ -77,7 +77,7 @@ const App = () => {
           })
           .catch(() => {
             setErrorMessage(
-              `Person '${alreadyAddedPerson.name}' was already removed from server`
+              `Person '${alreadyAddedPerson.name}' has already been removed from server`
             )
             setTimeout(() => {
               setErrorMessage(null)
