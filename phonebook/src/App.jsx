@@ -10,7 +10,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [personFilter, setPersonFilter] = useState('')
+  const [filter, setFilter] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
 
@@ -31,12 +31,12 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  const handleFilterPersonChange = (event) => {
-    setPersonFilter(event.target.value)
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value)
   }
 
-  const personsToFilter = persons.filter((person) =>
-    person.name.toLowerCase().includes(personFilter.toLowerCase())
+  const filteredPersons = persons.filter((person) =>
+    person.name.toLowerCase().includes(filter.toLowerCase())
   )
 
   const removePerson = (id, name) => {
@@ -54,22 +54,22 @@ const App = () => {
       number: newNumber
     }
 
-    const alreadyAddedPerson = persons.find(
+    const personExists = persons.find(
       (person) =>
         person.name.toLowerCase().trim() === newName.toLowerCase().trim()
     )
-    if (alreadyAddedPerson) {
+    if (personExists) {
       if (
         window.confirm(
           `${newName} is already added to phonebook, replace the old number with a new one?`
         )
       ) {
         phonebookService
-          .update(alreadyAddedPerson.id, personObject)
+          .update(personExists.id, personObject)
           .then((updatedPerson) => {
             setPersons(
               persons.map((person) =>
-                person.id !== alreadyAddedPerson.id ? person : updatedPerson
+                person.id !== personExists.id ? person : updatedPerson
               )
             )
             setNewName('')
@@ -77,14 +77,12 @@ const App = () => {
           })
           .catch(() => {
             setErrorMessage(
-              `Person '${alreadyAddedPerson.name}' has already been removed from server`
+              `Person '${personExists.name}' has already been removed from server`
             )
             setTimeout(() => {
               setErrorMessage(null)
             }, 5000)
-            setPersons((prev) =>
-              prev.filter((n) => n.id !== alreadyAddedPerson.id)
-            )
+            setPersons((prev) => prev.filter((n) => n.id !== personExists.id))
           })
       }
       return
@@ -106,7 +104,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <Notification message={errorMessage} style={'error'} />
       <Notification message={successMessage} style={'success'} />
-      <Filter handleFilterPersonChange={handleFilterPersonChange} />
+      <Filter handleFilterChange={handleFilterChange} />
       <h2>add a new</h2>
       <PersonForm
         addPerson={addPerson}
@@ -116,7 +114,7 @@ const App = () => {
         newNumber={newNumber}
       />
       <h2>Numbers</h2>
-      <Persons personsToFilter={personsToFilter} removePerson={removePerson} />
+      <Persons filteredPersons={filteredPersons} removePerson={removePerson} />
     </div>
   )
 }

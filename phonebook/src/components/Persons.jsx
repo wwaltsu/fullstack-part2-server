@@ -1,9 +1,9 @@
 import React from 'react'
 
-export default function Persons({ personsToFilter, removePerson }) {
+export default function Persons({ filteredPersons, removePerson }) {
   return (
     <div>
-      {personsToFilter.map((person) => (
+      {filteredPersons.map((person) => (
         <p key={person.name}>
           {person.name} {person.number}{' '}
           {

@@ -1,10 +1,10 @@
 import React from 'react'
 
-export default function Filter({ handleFilterPersonChange }) {
+export default function Filter({ handleFilterChange }) {
   return (
     <div>
       filter shown with:
-      <input onChange={handleFilterPersonChange} />
+      <input onChange={handleFilterChange} />
     </div>
   )
 }
