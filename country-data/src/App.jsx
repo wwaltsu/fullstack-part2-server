@@ -12,6 +12,8 @@ const App = () => {
   const filteredCountries = countries.filter((country) =>
     country.name.common.toLowerCase().includes(search.toLowerCase())
   )
+  console.log(selectedCountry)
+  console.log(weather)
 
   let displayedCountry = null
 
@@ -52,13 +54,13 @@ const App = () => {
     if (weather)
       return (
         <>
-          <h2>Weather</h2>
-          <p>Temperature: {weather.main.temp} °C</p>
+          <h2>Weather in {displayedCountry.capital}</h2>
+          <p>Temperature {weather.main.temp} Celsius</p>
           <img
             src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
             alt={weather.weather[0].description}
           />
-          <p>Wind: {weather.wind.speed} m/s</p>
+          <p>Wind {weather.wind.speed} m/s</p>
         </>
       )
   }
